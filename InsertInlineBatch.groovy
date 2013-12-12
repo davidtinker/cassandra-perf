@@ -1,8 +1,7 @@
 #!/usr/bin/env groovy
 
-// This test inserts batches using a BatchStatement filled with BoundStatement's
+// This tests inserts batches of rows using a single CQL string with parameters included inline
 
-import com.datastax.driver.core.BatchStatement
 @Grab('com.datastax.cassandra:cassandra-driver-core:2.0.0-rc1')
 @Grab('org.xerial.snappy:snappy-java:1.1.1-M1')
 @Grab('net.jpountz.lz4:lz4:1.2.0')
@@ -48,15 +47,17 @@ def rnd = new Random(123)
 
 def test = { int n ->
     int totalRows = 0
-    def ps = session.prepare("insert into ${keyspace}.wibble (id, name, info) values (?, ?, ?)")
     for (int i = 0; i < iterations + warmup; i++) {
-        BatchStatement bs = new BatchStatement(BatchStatement.Type.UNLOGGED)
+        StringBuilder b = new StringBuilder()
+        b.append("BEGIN UNLOGGED BATCH\n")
         def rows = rnd.nextInt(batchSize) + 1
         for (int j = 0; j < rows; j++) {
             def id = Integer.toString(rnd.nextInt(1000))
-            bs.add(ps.bind(id, "name" + id, "info" + id))
+            b.append("insert into ").append(keyspace).append(".wibble (id, name, info) values ('").append(id)
+                .append("','name").append(id).append("','info").append(id).append("')\n")
         }
-        session.execute(bs)
+        b.append("APPLY BATCH\n")
+        session.execute(b.toString())
         totalRows += rows
     }
     return totalRows
