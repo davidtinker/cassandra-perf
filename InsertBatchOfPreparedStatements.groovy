@@ -89,7 +89,6 @@ def test = { int n ->
                 available.release()
             }
         });
-        latch.countDown()
     }
     latch.await()
     return totalRows
