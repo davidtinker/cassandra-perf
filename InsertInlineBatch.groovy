@@ -13,8 +13,8 @@ import com.datastax.driver.core.Metadata
 
 def nodes = ["127.0.0.1"]       // these tests really need to run against a remote cluster to be any good
 def keyspace = "perf_test"
-def iterations = 1000
-def warmup = 100
+def iterations = 10000
+def warmup = 1000
 def batchSize = 50
 
 File cfg = new File("config.properties")
