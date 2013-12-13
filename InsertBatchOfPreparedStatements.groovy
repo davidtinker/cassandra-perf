@@ -24,7 +24,7 @@ def keyspace = "perf_test"
 def iterations = 100000
 def warmup = 10000
 def batchSize = 50
-def concurrency = 32
+def concurrency = 256
 
 File cfg = new File("config.properties")
 if (cfg.exists()) {
