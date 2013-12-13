@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS ${keyspace}.wibble (
 def rnd = new Random(123)
 
 Executor pool = new ThreadPoolExecutor(threads - 1, threads - 1, 0L, TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<Runnable>(100), new ThreadPoolExecutor.CallerRunsPolicy());
+        new LinkedBlockingQueue<Runnable>(1000), new ThreadPoolExecutor.CallerRunsPolicy());
 
 def test = { int n ->
     CountDownLatch latch = new CountDownLatch(n)
