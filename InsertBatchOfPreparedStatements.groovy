@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit
 
 def nodes = ["127.0.0.1"]       // these tests really need to run against a remote cluster to be any good
 def keyspace = "perf_test"
-def iterations = 10000
-def warmup = 1000
+def iterations = 100000
+def warmup = 10000
 def batchSize = 50
 def threads = 8
 
