@@ -8,14 +8,22 @@
 import com.datastax.driver.core.Cluster
 import com.datastax.driver.core.Host
 import com.datastax.driver.core.Metadata
+import com.datastax.driver.core.ResultSet
+import com.google.common.util.concurrent.FutureCallback
+import com.google.common.util.concurrent.Futures
+
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Semaphore
+import java.util.concurrent.atomic.AtomicInteger
 
 // override these values by creating config.properties in this directory
 
 def nodes = ["127.0.0.1"]       // these tests really need to run against a remote cluster to be any good
 def keyspace = "perf_test"
-def iterations = 10000
-def warmup = 1000
+def iterations = 100000
+def warmup = 10000
 def batchSize = 50
+def concurrency = 256
 
 File cfg = new File("config.properties")
 if (cfg.exists()) {
@@ -26,6 +34,7 @@ if (cfg.exists()) {
     if (p.iterations) iterations = p.iterations as Integer
     if (p.warmup) warmup = p.warmup as Integer
     if (p.batchSize) batchSize = p.batchSize as Integer
+    if (p.concurrency) concurrency = p.concurrency as Integer
 }
 
 Cluster cluster = Cluster.builder().addContactPoints(nodes as String[]).build();
@@ -54,7 +63,10 @@ CREATE TABLE IF NOT EXISTS ${keyspace}.wibble (
 def rnd = new Random(123)
 
 def test = { int n ->
-    int totalRows = 0
+    CountDownLatch latch = new CountDownLatch(n)
+    Semaphore available = new Semaphore(concurrency)
+    AtomicInteger totalRows = new AtomicInteger()
+    def ps = session.prepare("insert into ${keyspace}.wibble (id, name, info) values (?, ?, ?)")
     for (int i = 0; i < n; i++) {
         StringBuilder b = new StringBuilder()
         b.append("BEGIN UNLOGGED BATCH\n")
@@ -65,9 +77,23 @@ def test = { int n ->
                     .append(rnd.nextInt(1000)).append("')\n")
         }
         b.append("APPLY BATCH\n")
-        session.execute(b.toString())
-        totalRows += rows
+        available.acquire()
+        def f = session.executeAsync(b.toString())
+        Futures.addCallback(f, new FutureCallback<ResultSet>() {
+            public void onSuccess(ResultSet rs) {
+                latch.countDown()
+                totalRows.addAndGet(rows)
+                available.release()
+            }
+
+            public void onFailure(Throwable t) {
+                latch.countDown()
+                t.printStackTrace()
+                available.release()
+            }
+        });
     }
+    latch.await()
     return totalRows
 }
 
@@ -78,9 +104,9 @@ test(warmup)
 println("Inserting ${iterations} test batches")
 
 long start = System.currentTimeMillis()
-int rows = test(iterations)
+int rows = test(iterations).intValue()
 def s = (System.currentTimeMillis() - start) / 1000
-println "Inserted ${rows} rows in ${iterations} batches in ${s} secs, " +
+println "Inserted ${rows} rows in ${iterations} batches using ${concurrency} concurrent oprations in ${s} secs, " +
         "${(int)(rows/s)} rows/s, ${(int)(iterations/s)} batches/s"
 
 session.shutdown().get()
