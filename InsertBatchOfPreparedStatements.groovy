@@ -11,9 +11,7 @@ import com.datastax.driver.core.Host
 import com.datastax.driver.core.Metadata
 
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -36,6 +34,7 @@ if (cfg.exists()) {
     if (p.iterations) iterations = p.iterations as Integer
     if (p.warmup) warmup = p.warmup as Integer
     if (p.batchSize) batchSize = p.batchSize as Integer
+    if (p.threads) threads = p.threads as Integer
 }
 
 Cluster cluster = Cluster.builder().addContactPoints(nodes as String[]).build();

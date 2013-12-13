@@ -30,7 +30,7 @@ Intel® Xeon® E3-1270 v3 Quadcore Haswell 32GB RAM, 1 x 2TB commit log disk, 2 
 Using a batch of prepared statements is significantly faster:
 
 InsertBatchOfPreparedStatements:
-Inserted 280197 rows in 10000 batches in 15.279 secs, 18338 rows/s, 654 batches/s
+Inserted 2471231 rows in 100000 batches in 22.409 secs, 110278 rows/s, 4462 batches/s
 
 InsertInlineBatch:
 Inserted 280197 rows in 10000 batches in 20.768 secs, 13491 rows/s, 481 batches/s
