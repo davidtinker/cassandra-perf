@@ -55,7 +55,7 @@ def rnd = new Random(123)
 
 def test = { int n ->
     int totalRows = 0
-    for (int i = 0; i < iterations + warmup; i++) {
+    for (int i = 0; i < n; i++) {
         StringBuilder b = new StringBuilder()
         b.append("BEGIN UNLOGGED BATCH\n")
         def rows = rnd.nextInt(batchSize) + 1
