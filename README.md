@@ -27,11 +27,11 @@ downloaded.
 3 node cluster, each node:
 Intel® Xeon® E3-1270 v3 Quadcore Haswell 32GB RAM, 1 x 2TB commit log disk, 2 x 4TB data disks (RAID0)
 
-Using a batch of prepared statements is significantly faster:
+Using a batch of prepared statements is about 5% faster than inline parameters:
 
 InsertBatchOfPreparedStatements:
-Inserted 2471231 rows in 100000 batches in 22.409 secs, 110278 rows/s, 4462 batches/s
+Inserted 2551704 rows in 100000 batches using 256 concurrent operations in 15.785 secs, 161653 rows/s, 6335 batches/s
 
 InsertInlineBatch:
-Inserted 280197 rows in 10000 batches in 20.768 secs, 13491 rows/s, 481 batches/s
+Inserted 2551704 rows in 100000 batches using 256 concurrent operations in 16.712 secs, 152686 rows/s, 5983 batches/s
 

@@ -106,7 +106,7 @@ println("Inserting ${iterations} test batches")
 long start = System.currentTimeMillis()
 int rows = test(iterations).intValue()
 def s = (System.currentTimeMillis() - start) / 1000
-println "Inserted ${rows} rows in ${iterations} batches using ${concurrency} concurrent oprations in ${s} secs, " +
+println "Inserted ${rows} rows in ${iterations} batches using ${concurrency} concurrent operations in ${s} secs, " +
         "${(int)(rows/s)} rows/s, ${(int)(iterations/s)} batches/s"
 
 session.shutdown().get()
