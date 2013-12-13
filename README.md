@@ -14,3 +14,10 @@ this create a file in this directory called config.groovy and list some nodes in
     def nodes = ["10.0.0.10", "10.0.0.11", "10.0.0.12"]
 
 You can also change other test parameters in the same way.
+
+Now you can run the tests:
+
+    $ ./InsertBatchOfPreparedStatements.groovy
+
+It will take a while for the first run to start as the DataStax Java driver and all its dependencies have to be
+downloaded.

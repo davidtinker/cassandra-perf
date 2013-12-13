@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS ${keyspace}.wibble (
   id text,
   name text,
   info text,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id, name)
 )
 """)
 
@@ -52,9 +52,9 @@ def test = { int n ->
         b.append("BEGIN UNLOGGED BATCH\n")
         def rows = rnd.nextInt(batchSize) + 1
         for (int j = 0; j < rows; j++) {
-            def id = Integer.toString(rnd.nextInt(1000))
-            b.append("insert into ").append(keyspace).append(".wibble (id, name, info) values ('").append(id)
-                .append("','name").append(id).append("','info").append(id).append("')\n")
+            b.append("insert into ").append(keyspace).append(".wibble (id, name, info) values ('")
+                    .append(rnd.nextInt(10000)).append("','name").append(rnd.nextInt(10)).append("','info")
+                    .append(rnd.nextInt(1000)).append("')\n")
         }
         b.append("APPLY BATCH\n")
         session.execute(b.toString())

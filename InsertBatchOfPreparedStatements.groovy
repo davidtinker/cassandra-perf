@@ -14,8 +14,8 @@ import com.datastax.driver.core.Metadata
 
 def nodes = ["127.0.0.1"]       // these tests really need to run against a remote cluster to be any good
 def keyspace = "perf_test"
-def iterations = 1000
-def warmup = 100
+def iterations = 10000
+def warmup = 1000
 def batchSize = 50
 
 def cfg = new File("config.groovy")
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS ${keyspace}.wibble (
   id text,
   name text,
   info text,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id, name)
 )
 """)
 
@@ -53,8 +53,7 @@ def test = { int n ->
         BatchStatement bs = new BatchStatement(BatchStatement.Type.UNLOGGED)
         def rows = rnd.nextInt(batchSize) + 1
         for (int j = 0; j < rows; j++) {
-            def id = Integer.toString(rnd.nextInt(1000))
-            bs.add(ps.bind(id, "name" + id, "info" + id))
+            bs.add(ps.bind(Integer.toString(rnd.nextInt(10000)), "name" + rnd.nextInt(10), "info" + rnd.nextInt(1000)))
         }
         session.execute(bs)
         totalRows += rows
