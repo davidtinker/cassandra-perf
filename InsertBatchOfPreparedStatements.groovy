@@ -10,7 +10,7 @@ import com.datastax.driver.core.Cluster
 import com.datastax.driver.core.Host
 import com.datastax.driver.core.Metadata
 
-// override these values by creating config.groovy in this directory
+// override these values by creating config.properties in this directory
 
 def nodes = ["127.0.0.1"]       // these tests really need to run against a remote cluster to be any good
 def keyspace = "perf_test"
@@ -18,8 +18,16 @@ def iterations = 10000
 def warmup = 1000
 def batchSize = 50
 
-def cfg = new File("config.groovy")
-if (cfg.exists()) evaluate(cfg)
+File cfg = new File("config.properties")
+if (cfg.exists()) {
+    Properties p = new Properties()
+    p.load(new ByteArrayInputStream(cfg.bytes))
+    if (p.nodes) nodes = ((String)p.nodes).split('[\\s]*,[\\s]*') as List
+    if (p.keyspace) keyspace = p.keyspace
+    if (p.iterations) iterations = p.iterations as Integer
+    if (p.warmup) warmup = p.warmup as Integer
+    if (p.batchSize) batchSize = p.batchSize as Integer
+}
 
 Cluster cluster = Cluster.builder().addContactPoints(nodes as String[]).build();
 Metadata metadata = cluster.getMetadata();

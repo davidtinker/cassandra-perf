@@ -9,9 +9,9 @@ Its easy to install. Just unzip it and put the bin directory on your path.
 ## Running Tests
 
 Each test is runnable out of the box on local Cassandra instance but should be run against a real cluster. To do
-this create a file in this directory called config.groovy and list some nodes in your cluster:
+this create a file in this directory called config.properties and list some nodes in your cluster:
 
-    def nodes = ["10.0.0.10", "10.0.0.11", "10.0.0.12"]
+    nodes = 10.0.0.10, 10.0.0.11, 10.0.0.12
 
 You can also change other test parameters in the same way.
 
